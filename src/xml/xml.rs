@@ -49,6 +49,21 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
                 .collect::<Vec<_>>()
         })
     }
+    pub fn concat_all_text(&self) -> String {
+        if self.node.is_text_type() {
+            return format!("{}", self.node.value());
+        }
+        if self.children.is_none() {
+            return "".to_string();
+        }
+        self.children
+            .as_ref()
+            .unwrap()
+            .iter()
+            .fold("".to_string(), |acc, cur| {
+                format!("{}{}", acc, cur.concat_all_text())
+            })
+    }
 }
 #[cfg(test)]
 
@@ -56,6 +71,53 @@ mod xml_tree_tests {
     use crate::xml::nodes::{node::NodeType, node_interface::PropertyInterface};
 
     use super::{mock_node::MockNode, XmlTree};
+    #[test]
+    fn concat_all_text_test() {
+        let mut root = XmlTree {
+            node: MockNode::new("root"),
+            children: None,
+            _marker: Default::default(),
+        };
+        let mut text_node = MockNode::new("text-content");
+        text_node.change_type(NodeType::Text);
+        let text_child = XmlTree {
+            node: text_node,
+            children: None,
+            _marker: Default::default(),
+        };
+        root.append_children(text_child);
+        assert_eq!(root.concat_all_text(), "text-content".to_string());
+
+        let mut root = XmlTree {
+            node: MockNode::new("root"),
+            children: None,
+            _marker: Default::default(),
+        };
+        let mut text_node = MockNode::new("hello");
+        text_node.change_type(NodeType::Text);
+        let text_child = XmlTree {
+            node: text_node,
+            children: None,
+            _marker: Default::default(),
+        };
+        root.append_children(text_child);
+        let span = MockNode::new("span");
+        let mut text_node = MockNode::new("world");
+        text_node.change_type(NodeType::Text);
+        let text_node = XmlTree {
+            node: text_node,
+            children: None,
+            _marker: Default::default(),
+        };
+        let mut span = XmlTree {
+            node: span,
+            children: None,
+            _marker: Default::default(),
+        };
+        span.append_children(text_node);
+        root.append_children(span);
+        assert_eq!(root.concat_all_text(), "helloworld");
+    }
     #[test]
     fn text_contents_test() {
         let mut root = XmlTree {
