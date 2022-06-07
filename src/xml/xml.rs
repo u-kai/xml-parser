@@ -16,8 +16,17 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
             self.children = Some(Box::new(vec![child]))
         }
     }
-    pub fn get_elements_by_value(&self, value: &str) -> Option<Vec<&XmlTree<'a, T>>> {
-        Some(vec![self])
+    pub fn get_elements_by_node_value(&self, value: &str) -> Vec<&XmlTree<'a, T>> {
+        let mut result = vec![];
+        if self.node.value() == value {
+            result.push(self);
+        }
+        if self.children.is_some() {
+            self.children.as_ref().unwrap().iter().for_each(|child| {
+                result.extend(child.get_elements_by_node_value(value));
+            });
+        }
+        result
     }
 }
 #[cfg(test)]
@@ -25,13 +34,50 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
 mod xml_tree_tests {
     use super::{mock_node::MockNode, XmlTree};
     #[test]
-    fn get_elements_by_value_test() {
+    fn get_elements_by_node_value_test() {
+        let root = XmlTree {
+            node: MockNode::new("root"),
+            children: None,
+            _marker: Default::default(),
+        };
+        assert_eq!(root.get_elements_by_node_value("root"), vec![&root]);
         let mut root = XmlTree {
             node: MockNode::new("root"),
             children: None,
             _marker: Default::default(),
         };
-        assert_eq!(root.get_elements_by_value("root"), Some(vec![&root]))
+        root.append_children(XmlTree {
+            node: MockNode::new("child"),
+            children: None,
+            _marker: Default::default(),
+        });
+        assert_eq!(root.get_elements_by_node_value("root"), vec![&root]);
+        let mut root = XmlTree {
+            node: MockNode::new("root"),
+            children: None,
+            _marker: Default::default(),
+        };
+        let mut child = XmlTree {
+            node: MockNode::new("child"),
+            children: None,
+            _marker: Default::default(),
+        };
+        let grand_child = XmlTree {
+            node: MockNode::new("child"),
+            children: None,
+            _marker: Default::default(),
+        };
+        child.append_children(grand_child.clone());
+        child.append_children(XmlTree {
+            node: MockNode::new("dumy"),
+            children: None,
+            _marker: Default::default(),
+        });
+        root.append_children(child.clone());
+        assert_eq!(
+            root.get_elements_by_node_value("child"),
+            vec![&child, &grand_child]
+        );
     }
     #[test]
     fn append_child_test() {
