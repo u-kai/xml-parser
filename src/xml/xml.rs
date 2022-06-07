@@ -49,6 +49,21 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
                 .collect::<Vec<_>>()
         })
     }
+    ///
+    /// Return child all text
+    /// ## Example
+    /// ```rust
+    ///     use xml_parser::xml::xml::XmlTree;
+    ///     let source = r#"<div>
+    ///                         <p>my name</p>
+    ///                         <div>
+    ///                             <p>is</p>
+    ///                             <p>kai</p>
+    ///                         </div>
+    ///                    </div>"#;
+    ///     //let xml = XmlTree::from(source);
+    ///     //asserteq!(xml.concat_all_text(),"my name is kai")
+    /// ```
     pub fn concat_all_text(&self) -> String {
         if self.node.is_text_type() {
             return format!("{}", self.node.value());
@@ -61,7 +76,11 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
             .unwrap()
             .iter()
             .fold("".to_string(), |acc, cur| {
-                format!("{}{}", acc, cur.concat_all_text())
+                if acc.len() == 0 {
+                    format!("{}", cur.concat_all_text())
+                } else {
+                    format!("{} {}", acc, cur.concat_all_text())
+                }
             })
     }
 }
@@ -116,7 +135,7 @@ mod xml_tree_tests {
         };
         span.append_children(text_node);
         root.append_children(span);
-        assert_eq!(root.concat_all_text(), "helloworld");
+        assert_eq!(root.concat_all_text(), "hello world");
     }
     #[test]
     fn text_contents_test() {

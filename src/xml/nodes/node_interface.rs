@@ -1,5 +1,3 @@
-use super::node::NodeType;
-
 pub trait NodeInterface<'a>: ElementInterface<'a> + PropertyInterface {
     fn is_element_type(&self) -> bool;
     fn is_text_type(&self) -> bool;
