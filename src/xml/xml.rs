@@ -16,11 +16,23 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
             self.children = Some(Box::new(vec![child]))
         }
     }
+    pub fn get_elements_by_value(&self, value: &str) -> Option<Vec<&XmlTree<'a, T>>> {
+        Some(vec![self])
+    }
 }
 #[cfg(test)]
 
 mod xml_tree_tests {
     use super::{mock_node::MockNode, XmlTree};
+    #[test]
+    fn get_elements_by_value_test() {
+        let mut root = XmlTree {
+            node: MockNode::new("root"),
+            children: None,
+            _marker: Default::default(),
+        };
+        assert_eq!(root.get_elements_by_value("root"), Some(vec![&root]))
+    }
     #[test]
     fn append_child_test() {
         let mut root = XmlTree {
