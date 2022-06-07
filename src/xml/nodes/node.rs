@@ -9,8 +9,8 @@ pub struct XmlNode<'a, T: NodeInterface<'a>> {
     _marker: PhantomData<&'a ()>,
 }
 
-#[derive(Clone, Debug)]
-enum NodeType {
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum NodeType {
     Element,
     Text,
     Comment,

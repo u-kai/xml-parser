@@ -1,11 +1,15 @@
-pub trait NodeInterface<'a>: ElementInterface<'a> + PropertyInterface {}
+use super::node::NodeType;
+
+pub trait NodeInterface<'a>: ElementInterface<'a> + PropertyInterface {
+    fn is_element_type(&self) -> bool;
+    fn is_text_type(&self) -> bool;
+}
 pub type PropertyKey<'a> = &'a str;
 pub type PropertyValue<'a> = Vec<&'a str>;
 pub trait ElementInterface<'a> {
     fn change(&mut self, value: &'a str) -> ();
     fn value(&self) -> &'a str;
 }
-
 pub trait PropertyInterface {
     fn keys(&self) -> Option<&Vec<PropertyKey>>;
     fn values(&self) -> Option<Vec<Vec<PropertyValue>>>;

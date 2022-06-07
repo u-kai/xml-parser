@@ -40,13 +40,39 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
         }
         result
     }
+    pub fn text_contents(&self) -> Option<Vec<&str>> {
+        self.children.as_ref().map(|child| {
+            child
+                .iter()
+                .filter(|child| child.node.is_text_type())
+                .map(|child| child.node.value())
+                .collect::<Vec<_>>()
+        })
+    }
 }
 #[cfg(test)]
 
 mod xml_tree_tests {
-    use crate::xml::nodes::node_interface::PropertyInterface;
+    use crate::xml::nodes::{node::NodeType, node_interface::PropertyInterface};
 
     use super::{mock_node::MockNode, XmlTree};
+    #[test]
+    fn text_contents_test() {
+        let mut root = XmlTree {
+            node: MockNode::new("root"),
+            children: None,
+            _marker: Default::default(),
+        };
+        let mut text_node = MockNode::new("text-content");
+        text_node.change_type(NodeType::Text);
+        let text_child = XmlTree {
+            node: text_node,
+            children: None,
+            _marker: Default::default(),
+        };
+        root.append_children(text_child);
+        assert_eq!(root.text_contents(), Some(vec!["text-content"]))
+    }
     #[test]
     fn get_elements_by_key_value_test() {
         let mut root = XmlTree {
@@ -146,21 +172,29 @@ mod xml_tree_tests {
 mod mock_node {
     use std::collections::HashMap;
 
-    use crate::xml::nodes::node_interface::{
-        ElementInterface, NodeInterface, PropertyInterface, PropertyKey, PropertyValue,
+    use crate::xml::nodes::{
+        node::{self, NodeType},
+        node_interface::{
+            ElementInterface, NodeInterface, PropertyInterface, PropertyKey, PropertyValue,
+        },
     };
 
     #[derive(Clone, Debug, PartialEq, Eq)]
     pub(super) struct MockNode<'a> {
         value: &'a str,
         key_value: HashMap<String, Vec<String>>,
+        node_type: NodeType,
     }
     impl<'a> MockNode<'a> {
         pub fn new(value: &'a str) -> Self {
             MockNode {
                 value,
                 key_value: HashMap::new(),
+                node_type: NodeType::Element,
             }
+        }
+        pub fn change_type(&mut self, node_type: NodeType) {
+            self.node_type = node_type
         }
     }
     impl<'a> ElementInterface<'a> for MockNode<'a> {
@@ -209,5 +243,12 @@ mod mock_node {
             None
         }
     }
-    impl<'a> NodeInterface<'a> for MockNode<'a> {}
+    impl<'a> NodeInterface<'a> for MockNode<'a> {
+        fn is_element_type(&self) -> bool {
+            self.node_type == NodeType::Element
+        }
+        fn is_text_type(&self) -> bool {
+            self.node_type == NodeType::Text
+        }
+    }
 }
