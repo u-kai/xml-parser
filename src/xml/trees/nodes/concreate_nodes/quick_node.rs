@@ -17,7 +17,9 @@ impl<'a> QuickNode<'a> {
 }
 
 impl<'a> ElementInterface<'a> for QuickNode<'a> {
-    fn change(&mut self, value: &'a str) -> () {}
+    fn change(&mut self, value: &'a str) -> () {
+        self.value = value
+    }
     fn value(&self) -> &'a str {
         self.value
     }
@@ -49,9 +51,19 @@ impl<'a> NodeInterface<'a> for QuickNode<'a> {
 
 #[cfg(test)]
 mod quick_node_test {
-    use crate::xml::trees::nodes::{node_interface::NodeInterface, node_type::NodeType};
+    use crate::xml::trees::nodes::{
+        node_interface::{ElementInterface, NodeInterface},
+        node_type::NodeType,
+    };
 
     use super::QuickNode;
+
+    #[test]
+    fn change_test() {
+        let mut node = QuickNode::new("test", NodeType::Element);
+        node.change("data");
+        assert_eq!(node.value(), "data");
+    }
 
     #[test]
     fn is_element_type_test() {
