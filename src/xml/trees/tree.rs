@@ -286,7 +286,7 @@ mod mock_node {
             self.value
         }
     }
-    impl<'a> PropertyInterface for MockNode<'a> {
+    impl<'a> PropertyInterface<'a> for MockNode<'a> {
         fn add_property(&mut self, key: &str, value: &str) -> () {
             if self.key_value.contains_key(key) {
                 self.key_value
