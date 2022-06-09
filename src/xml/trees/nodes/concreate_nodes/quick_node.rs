@@ -5,7 +5,6 @@ use crate::xml::trees::nodes::{
         ElementInterface, NodeInterface, PropertyInterface, PropertyKey, PropertyValue,
     },
     node_type::NodeType,
-    parts::element::NodeElement,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -52,7 +51,17 @@ impl<'a> PropertyInterface<'a> for QuickNode<'a> {
         }
         None
     }
-    fn values(&self) -> Option<Vec<Vec<PropertyValue>>> {
+    fn values(&self) -> Option<Vec<&PropertyValue>> {
+        if self.property.is_some() {
+            return Some(
+                self.property
+                    .as_ref()
+                    .unwrap()
+                    .values()
+                    .map(|v| v)
+                    .collect::<Vec<_>>(),
+            );
+        }
         None
     }
     fn contains_key(&self, key: &str) -> bool {
@@ -109,6 +118,22 @@ mod quick_node_test {
     use std::collections::HashMap;
 
     use super::QuickNode;
+    #[test]
+    fn values_test() {
+        let mut hash = HashMap::new();
+        hash.insert("key", vec!["value"]);
+        hash.insert("key2", vec!["value2"]);
+        hash.insert("key3", vec!["value3"]);
+        let node = QuickNode {
+            value: "test",
+            property: Some(hash),
+            node_type: NodeType::Element,
+        };
+        let values = node.values();
+        assert_eq!(values.clone().unwrap().contains(&&vec!["value"]), true);
+        assert_eq!(values.clone().unwrap().contains(&&vec!["value2"]), true);
+        assert_eq!(values.clone().unwrap().contains(&&vec!["value3"]), true);
+    }
     #[test]
     fn keys_test() {
         let mut hash = HashMap::new();

@@ -320,7 +320,7 @@ mod mock_node {
             //}
             None
         }
-        fn values(&self) -> Option<Vec<Vec<PropertyValue>>> {
+        fn values(&self) -> Option<Vec<&PropertyValue>> {
             None
         }
     }
