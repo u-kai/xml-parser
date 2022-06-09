@@ -53,7 +53,16 @@ impl<'a> PropertyInterface<'a> for QuickNode<'a> {
         }
     }
     fn contains_key_value(&self, key: &str, value: &str) -> bool {
-        true
+        if self.contains_key(key) {
+            self.property
+                .as_ref()
+                .unwrap()
+                .get(key)
+                .unwrap()
+                .contains(&value)
+        } else {
+            false
+        }
     }
     fn add_property(&mut self, key: &'a str, value: &'a str) -> () {
         if self.property.is_some() {
@@ -90,6 +99,18 @@ mod quick_node_test {
     use std::collections::HashMap;
 
     use super::QuickNode;
+    #[test]
+    fn containes_key_value_test() {
+        let mut hash = HashMap::new();
+        hash.insert("key", vec!["value"]);
+        let node = QuickNode {
+            value: "test",
+            property: Some(hash),
+            node_type: NodeType::Element,
+        };
+        assert_eq!(node.contains_key_value("key", "value"), true);
+        assert_eq!(node.contains_key_value("key", "value2"), false);
+    }
     #[test]
     fn containes_key_test() {
         let mut hash = HashMap::new();
