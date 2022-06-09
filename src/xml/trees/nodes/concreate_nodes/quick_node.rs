@@ -39,7 +39,17 @@ impl<'a> ElementInterface<'a> for QuickNode<'a> {
     }
 }
 impl<'a> PropertyInterface<'a> for QuickNode<'a> {
-    fn keys(&self) -> Option<&Vec<PropertyKey>> {
+    fn keys(&self) -> Option<Vec<PropertyKey>> {
+        if self.property.is_some() {
+            return Some(
+                self.property
+                    .as_ref()
+                    .unwrap()
+                    .keys()
+                    .map(|k| *k)
+                    .collect::<Vec<_>>(),
+            );
+        }
         None
     }
     fn values(&self) -> Option<Vec<Vec<PropertyValue>>> {
@@ -99,6 +109,22 @@ mod quick_node_test {
     use std::collections::HashMap;
 
     use super::QuickNode;
+    #[test]
+    fn keys_test() {
+        let mut hash = HashMap::new();
+        hash.insert("key", vec!["value"]);
+        hash.insert("key2", vec!["value"]);
+        hash.insert("key3", vec!["value"]);
+        let node = QuickNode {
+            value: "test",
+            property: Some(hash),
+            node_type: NodeType::Element,
+        };
+        let keys = node.keys();
+        assert_eq!(keys.clone().unwrap().contains(&"key"), true);
+        assert_eq!(keys.clone().unwrap().contains(&"key2"), true);
+        assert_eq!(keys.clone().unwrap().contains(&"key3"), true);
+    }
     #[test]
     fn containes_key_value_test() {
         let mut hash = HashMap::new();

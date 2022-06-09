@@ -9,7 +9,7 @@ pub trait ElementInterface<'a> {
     fn value(&self) -> &'a str;
 }
 pub trait PropertyInterface<'a> {
-    fn keys(&self) -> Option<&Vec<PropertyKey>>;
+    fn keys(&self) -> Option<Vec<PropertyKey>>;
     fn values(&self) -> Option<Vec<Vec<PropertyValue>>>;
     fn contains_key(&self, key: &str) -> bool;
     fn contains_key_value(&self, key: &str, value: &str) -> bool;

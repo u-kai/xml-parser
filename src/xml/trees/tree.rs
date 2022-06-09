@@ -312,7 +312,7 @@ mod mock_node {
                 false
             }
         }
-        fn keys(&self) -> Option<&Vec<PropertyKey>> {
+        fn keys(&self) -> Option<Vec<PropertyKey>> {
             //if self.key_value.keys().len() == 0 {
             //None
             //} else {
