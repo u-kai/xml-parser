@@ -1,4 +1,4 @@
-use crate::xml::nodes::node_interface::NodeInterface;
+use crate::xml::trees::nodes::node_interface::NodeInterface;
 use std::marker::PhantomData;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -53,7 +53,6 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
     /// Return child all text
     /// ## Example
     /// ```rust
-    ///     use xml_parser::xml::xml::XmlTree;
     ///     let source = r#"<div>
     ///                         <p>my name</p>
     ///                         <div>
@@ -64,6 +63,7 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
     ///     //let xml = XmlTree::from(source);
     ///     //asserteq!(xml.concat_all_text(),"my name is kai")
     /// ```
+    ///
     pub fn concat_all_text(&self) -> String {
         if self.node.is_text_type() {
             return format!("{}", self.node.value());
@@ -87,7 +87,7 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
 #[cfg(test)]
 
 mod xml_tree_tests {
-    use crate::xml::nodes::{node::NodeType, node_interface::PropertyInterface};
+    use crate::xml::trees::nodes::{node_interface::PropertyInterface, node_type::NodeType};
 
     use super::{mock_node::MockNode, XmlTree};
     #[test]
@@ -253,11 +253,11 @@ mod xml_tree_tests {
 mod mock_node {
     use std::collections::HashMap;
 
-    use crate::xml::nodes::{
-        node::{self, NodeType},
+    use crate::xml::trees::nodes::{
         node_interface::{
             ElementInterface, NodeInterface, PropertyInterface, PropertyKey, PropertyValue,
         },
+        node_type::{self, NodeType},
     };
 
     #[derive(Clone, Debug, PartialEq, Eq)]
