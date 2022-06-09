@@ -57,8 +57,14 @@ mod quick_node_test {
     fn is_element_type_test() {
         let node = QuickNode::new("test", NodeType::Element);
         assert_eq!(node.is_element_type(), true);
-        assert_eq!(node.is_element_type(), true);
         let node = QuickNode::new("test", NodeType::Text);
         assert_eq!(node.is_element_type(), false);
+    }
+    #[test]
+    fn is_text_type_test() {
+        let node = QuickNode::new("test", NodeType::Text);
+        assert_eq!(node.is_text_type(), true);
+        let node = QuickNode::new("test", NodeType::Element);
+        assert_eq!(node.is_text_type(), false);
     }
 }
