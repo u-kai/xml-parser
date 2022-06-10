@@ -14,4 +14,6 @@ pub trait PropertyInterface<'a> {
     fn contains_key(&self, key: &str) -> bool;
     fn contains_key_value(&self, key: &str, value: &str) -> bool;
     fn add_property(&mut self, key: &'a str, value: &'a str) -> ();
+    //fn change_property(&mut self, key: &'a str, new_value: &'a str) -> ();
+    //fn remove_property(&mut self, key: &'a str) -> Option<PropertyValue>;
 }

@@ -9,6 +9,9 @@ pub struct XmlTree<'a, T: NodeInterface<'a>> {
 }
 
 impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
+    //pub fn change_property(&mut self, key: &'a str, new_value: &'a str) {
+    //self.node.change_property(key, new_value)
+    //}
     pub fn append_children(&mut self, child: XmlTree<'a, T>) {
         if self.children.is_some() {
             self.children.as_mut().unwrap().push(child)
@@ -90,6 +93,27 @@ mod xml_tree_tests {
     use crate::xml::trees::nodes::{node_interface::PropertyInterface, node_type::NodeType};
 
     use super::{mock_node::MockNode, XmlTree};
+    //#[test]
+    //fn change_property_test() {
+    //let mut root = MockNode::new("root");
+    //root.add_property("id", "kai");
+
+    //let mut root = XmlTree {
+    //node: root,
+    //children: None,
+    //_marker: Default::default(),
+    //};
+    //root.change_property("id", "iak");
+    //let mut tobe = MockNode::new("root");
+    //tobe.add_property("id", "iak");
+
+    //let mut tobe = XmlTree {
+    //node: tobe,
+    //children: None,
+    //_marker: Default::default(),
+    //};
+    //assert_eq!(root, tobe);
+    //}
     #[test]
     fn concat_all_text_test() {
         let mut root = XmlTree {
@@ -265,6 +289,7 @@ mod mock_node {
         value: &'a str,
         key_value: HashMap<String, Vec<String>>,
         node_type: NodeType,
+        stack: Vec<&'a str>,
     }
     impl<'a> MockNode<'a> {
         pub fn new(value: &'a str) -> Self {
@@ -272,10 +297,14 @@ mod mock_node {
                 value,
                 key_value: HashMap::new(),
                 node_type: NodeType::Element,
+                stack: Vec::new(),
             }
         }
         pub fn change_type(&mut self, node_type: NodeType) {
             self.node_type = node_type
+        }
+        pub fn save_property_value(&mut self, value: &'a str) {
+            self.stack.push(value)
         }
     }
     impl<'a> ElementInterface<'a> for MockNode<'a> {
@@ -287,6 +316,18 @@ mod mock_node {
         }
     }
     impl<'a> PropertyInterface<'a> for MockNode<'a> {
+        //fn change_property(&mut self, key: &'a str, new_value: &'a str) -> () {
+        //self.remove_property(key);
+        //self.add_property(key, new_value);
+        //}
+        //fn remove_property(&mut self, key: &'a str) -> Option<PropertyValue> {
+        //if self.contains_key(key) {
+        //self.remove_property(key);
+        //Some(self.stack.clone())
+        //} else {
+        //None
+        //}
+        //}
         fn add_property(&mut self, key: &str, value: &str) -> () {
             if self.key_value.contains_key(key) {
                 self.key_value
