@@ -9,6 +9,15 @@ pub struct XmlTree<'a, T: NodeInterface<'a>> {
 }
 
 impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
+    pub fn new(node: T, children: Option<Box<Vec<XmlTree<'a, T>>>>) -> Self {
+        XmlTree {
+            node,
+            _marker: Default::default(),
+            children,
+        }
+    }
+}
+impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
     //pub fn change_property(&mut self, key: &'a str, new_value: &'a str) {
     //self.node.change_property(key, new_value)
     //}
