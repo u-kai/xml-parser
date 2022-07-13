@@ -2,14 +2,14 @@ use std::collections::HashMap;
 
 use crate::xml::trees::nodes::{concreate_nodes::quick_node::QuickNode, node_type::NodeType};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct Token<'a> {
-    value: &'a str,
-    token_type: TokenType,
+    pub(super) value: &'a str,
+    pub(super) token_type: TokenType,
 }
 
 impl<'a> Token<'a> {
-    fn with_type(value: &'a str, token_type: TokenType) -> Self {
+    pub fn with_type(value: &'a str, token_type: TokenType) -> Self {
         Token { value, token_type }
     }
     pub fn to_node(self) -> QuickNode<'a> {
@@ -17,6 +17,7 @@ impl<'a> Token<'a> {
             TokenType::Element => self.element_token_to_node(),
             TokenType::SingleElement => self.single_element_token_to_node(),
             TokenType::Text => QuickNode::new(self.value, NodeType::Text),
+            _ => panic!("not consider end type"),
         }
     }
     fn element_token_to_node(self) -> QuickNode<'a> {
@@ -30,6 +31,7 @@ impl<'a> Token<'a> {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) enum TokenType {
     Element,
+    EndElement,
     SingleElement,
     Text,
 }

@@ -1,9 +1,12 @@
 use crate::xml::trees::{nodes::concreate_nodes::quick_node::QuickNode, tree::XmlTree};
 
 use crate::xml::trees::nodes::node_type::NodeType;
+
+use super::token_array::TokenArray;
 pub struct XmlGenerator;
 impl XmlGenerator {
     pub fn gen<'a>(source: &'a str) -> XmlTree<'a, QuickNode<'a>> {
+        let token_array = TokenArray::new(source);
         let data_node = XmlTree::new(QuickNode::new("data", NodeType::Text), None);
         let div_tree = XmlTree::new(
             QuickNode::new("div", NodeType::Element),
