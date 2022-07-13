@@ -1,1 +1,1 @@
-mod xml;
+pub mod xml;

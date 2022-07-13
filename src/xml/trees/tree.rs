@@ -291,7 +291,7 @@ mod mock_node {
         node_interface::{
             ElementInterface, NodeInterface, PropertyInterface, PropertyKey, PropertyValue,
         },
-        node_type::{self, NodeType},
+        node_type::NodeType,
     };
 
     #[derive(Clone, Debug, PartialEq, Eq)]
