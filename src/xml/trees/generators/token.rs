@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-use crate::xml::trees::nodes::{
-    concreate_nodes::quick_node::QuickNode, node_interface::PropertyInterface, node_type::NodeType,
-};
+use crate::xml::trees::nodes::{concreate_nodes::quick_node::QuickNode, node_type::NodeType};
 
 #[derive(Clone, Debug)]
 pub(super) struct Token<'a> {
@@ -30,7 +28,7 @@ impl<'a> Token<'a> {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-enum TokenType {
+pub(super) enum TokenType {
     Element,
     SingleElement,
     Text,
@@ -151,6 +149,8 @@ fn start_or_single_token_to_node<'a>(token: Token<'a>) -> QuickNode<'a> {
 
 #[cfg(test)]
 mod token_to_node_tests {
+
+    use crate::xml::trees::nodes::node_interface::PropertyInterface;
 
     use super::*;
     #[test]
