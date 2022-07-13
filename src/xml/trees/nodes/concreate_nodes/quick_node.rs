@@ -5,7 +5,6 @@ use crate::xml::trees::nodes::{
         ElementInterface, NodeInterface, PropertyInterface, PropertyKey, PropertyValue,
     },
     node_type::NodeType,
-    parts::property,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -51,30 +50,14 @@ impl<'a> ElementInterface<'a> for QuickNode<'a> {
 }
 impl<'a> PropertyInterface<'a> for QuickNode<'a> {
     fn keys(&self) -> Option<Vec<PropertyKey>> {
-        if self.property.is_some() {
-            return Some(
-                self.property
-                    .as_ref()
-                    .unwrap()
-                    .keys()
-                    .map(|k| *k)
-                    .collect::<Vec<_>>(),
-            );
-        }
-        None
+        self.property
+            .as_ref()
+            .map(|p| p.keys().map(|k| *k).collect())
     }
     fn values(&self) -> Option<Vec<&PropertyValue>> {
-        if self.property.is_some() {
-            return Some(
-                self.property
-                    .as_ref()
-                    .unwrap()
-                    .values()
-                    .map(|v| v)
-                    .collect::<Vec<_>>(),
-            );
-        }
-        None
+        self.property
+            .as_ref()
+            .map(|p| p.values().map(|v| v).collect())
     }
     fn contains_key(&self, key: &str) -> bool {
         if self.property.is_some() {
