@@ -2,16 +2,17 @@ use crate::xml::trees::nodes::node_interface::NodeInterface;
 use std::marker::PhantomData;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+
 pub struct XmlTree<'a, T: NodeInterface<'a>> {
-    node: T,
+    root: T,
     children: Option<Box<Vec<XmlTree<'a, T>>>>,
     _marker: PhantomData<&'a ()>,
 }
 
 impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
-    pub fn new(node: T, children: Option<Box<Vec<XmlTree<'a, T>>>>) -> Self {
+    pub fn new(root: T, children: Option<Box<Vec<XmlTree<'a, T>>>>) -> Self {
         XmlTree {
-            node,
+            root,
             _marker: Default::default(),
             children,
         }
@@ -19,7 +20,7 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
 }
 impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
     //pub fn change_property(&mut self, key: &'a str, new_value: &'a str) {
-    //self.node.change_property(key, new_value)
+    //self.root.change_property(key, new_value)
     //}
     pub fn append_children(&mut self, child: XmlTree<'a, T>) {
         if self.children.is_some() {
@@ -30,7 +31,7 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
     }
     pub fn get_elements_by_key_value(&self, key: &str, value: &str) -> Vec<&XmlTree<'a, T>> {
         let mut result = vec![];
-        if self.node.contains_key_value(key, value) {
+        if self.root.contains_key_value(key, value) {
             result.push(self);
         }
         if self.children.is_some() {
@@ -42,7 +43,7 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
     }
     pub fn get_elements_by_node_value(&self, value: &str) -> Vec<&XmlTree<'a, T>> {
         let mut result = vec![];
-        if self.node.value() == value {
+        if self.root.value() == value {
             result.push(self);
         }
         if self.children.is_some() {
@@ -56,8 +57,8 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
         self.children.as_ref().map(|child| {
             child
                 .iter()
-                .filter(|child| child.node.is_text_type())
-                .map(|child| child.node.value())
+                .filter(|child| child.root.is_text_type())
+                .map(|child| child.root.value())
                 .collect::<Vec<_>>()
         })
     }
@@ -77,8 +78,8 @@ impl<'a, T: NodeInterface<'a>> XmlTree<'a, T> {
     /// ```
     ///
     pub fn concat_all_text(&self) -> String {
-        if self.node.is_text_type() {
-            return format!("{}", self.node.value());
+        if self.root.is_text_type() {
+            return format!("{}", self.root.value());
         }
         if self.children.is_none() {
             return "".to_string();
@@ -108,7 +109,7 @@ mod xml_tree_tests {
     //root.add_property("id", "kai");
 
     //let mut root = XmlTree {
-    //node: root,
+    //root: root,
     //children: None,
     //_marker: Default::default(),
     //};
@@ -117,7 +118,7 @@ mod xml_tree_tests {
     //tobe.add_property("id", "iak");
 
     //let mut tobe = XmlTree {
-    //node: tobe,
+    //root: tobe,
     //children: None,
     //_marker: Default::default(),
     //};
@@ -126,14 +127,14 @@ mod xml_tree_tests {
     #[test]
     fn concat_all_text_test() {
         let mut root = XmlTree {
-            node: MockNode::new("root"),
+            root: MockNode::new("root"),
             children: None,
             _marker: Default::default(),
         };
         let mut text_node = MockNode::new("text-content");
         text_node.change_type(NodeType::Text);
         let text_child = XmlTree {
-            node: text_node,
+            root: text_node,
             children: None,
             _marker: Default::default(),
         };
@@ -141,14 +142,14 @@ mod xml_tree_tests {
         assert_eq!(root.concat_all_text(), "text-content".to_string());
 
         let mut root = XmlTree {
-            node: MockNode::new("root"),
+            root: MockNode::new("root"),
             children: None,
             _marker: Default::default(),
         };
         let mut text_node = MockNode::new("hello");
         text_node.change_type(NodeType::Text);
         let text_child = XmlTree {
-            node: text_node,
+            root: text_node,
             children: None,
             _marker: Default::default(),
         };
@@ -157,12 +158,12 @@ mod xml_tree_tests {
         let mut text_node = MockNode::new("world");
         text_node.change_type(NodeType::Text);
         let text_node = XmlTree {
-            node: text_node,
+            root: text_node,
             children: None,
             _marker: Default::default(),
         };
         let mut span = XmlTree {
-            node: span,
+            root: span,
             children: None,
             _marker: Default::default(),
         };
@@ -173,14 +174,14 @@ mod xml_tree_tests {
     #[test]
     fn text_contents_test() {
         let mut root = XmlTree {
-            node: MockNode::new("root"),
+            root: MockNode::new("root"),
             children: None,
             _marker: Default::default(),
         };
         let mut text_node = MockNode::new("text-content");
         text_node.change_type(NodeType::Text);
         let text_child = XmlTree {
-            node: text_node,
+            root: text_node,
             children: None,
             _marker: Default::default(),
         };
@@ -190,7 +191,7 @@ mod xml_tree_tests {
     #[test]
     fn get_elements_by_key_value_test() {
         let mut root = XmlTree {
-            node: MockNode::new("root"),
+            root: MockNode::new("root"),
             children: None,
             _marker: Default::default(),
         };
@@ -199,7 +200,7 @@ mod xml_tree_tests {
         child.add_property("class", "style1");
         child.add_property("class", "style2");
         let child = XmlTree {
-            node: child,
+            root: child,
             children: None,
             _marker: Default::default(),
         };
@@ -217,40 +218,40 @@ mod xml_tree_tests {
     #[test]
     fn get_elements_by_node_value_test() {
         let root = XmlTree {
-            node: MockNode::new("root"),
+            root: MockNode::new("root"),
             children: None,
             _marker: Default::default(),
         };
         assert_eq!(root.get_elements_by_node_value("root"), vec![&root]);
         let mut root = XmlTree {
-            node: MockNode::new("root"),
+            root: MockNode::new("root"),
             children: None,
             _marker: Default::default(),
         };
         root.append_children(XmlTree {
-            node: MockNode::new("child"),
+            root: MockNode::new("child"),
             children: None,
             _marker: Default::default(),
         });
         assert_eq!(root.get_elements_by_node_value("root"), vec![&root]);
         let mut root = XmlTree {
-            node: MockNode::new("root"),
+            root: MockNode::new("root"),
             children: None,
             _marker: Default::default(),
         };
         let mut child = XmlTree {
-            node: MockNode::new("child"),
+            root: MockNode::new("child"),
             children: None,
             _marker: Default::default(),
         };
         let grand_child = XmlTree {
-            node: MockNode::new("child"),
+            root: MockNode::new("child"),
             children: None,
             _marker: Default::default(),
         };
         child.append_children(grand_child.clone());
         child.append_children(XmlTree {
-            node: MockNode::new("dumy"),
+            root: MockNode::new("dumy"),
             children: None,
             _marker: Default::default(),
         });
@@ -263,19 +264,19 @@ mod xml_tree_tests {
     #[test]
     fn append_child_test() {
         let mut root = XmlTree {
-            node: MockNode::new("root"),
+            root: MockNode::new("root"),
             children: None,
             _marker: Default::default(),
         };
         let child = XmlTree {
-            node: MockNode::new("child"),
+            root: MockNode::new("child"),
             children: None,
             _marker: Default::default(),
         };
         root.append_children(child.clone());
 
         let tobe_root = XmlTree {
-            node: MockNode::new("root"),
+            root: MockNode::new("root"),
             children: Some(Box::new(vec![child.clone()])),
             _marker: Default::default(),
         };

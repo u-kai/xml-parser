@@ -1,14 +1,11 @@
 use crate::xml::trees::{nodes::concreate_nodes::quick_node::QuickNode, tree::XmlTree};
 
-use crate::xml::trees::nodes::{
-    node_interface::{NodeInterface, PropertyInterface},
-    node_type::NodeType,
-};
+use crate::xml::trees::nodes::node_type::NodeType;
 pub struct XmlGenerator;
 impl XmlGenerator {
     pub fn gen<'a>(source: &'a str) -> XmlTree<'a, QuickNode<'a>> {
         let data_node = XmlTree::new(QuickNode::new("data", NodeType::Text), None);
-        let mut div_tree = XmlTree::new(
+        let div_tree = XmlTree::new(
             QuickNode::new("div", NodeType::Element),
             Some(Box::new(vec![data_node])),
         );
@@ -25,6 +22,14 @@ mod xml_generator_tests {
 
     #[test]
     fn gen_test() {
+        let source = "<div>data</div>";
+        let tree = XmlGenerator::gen(source);
+        let data_node = XmlTree::new(QuickNode::new("data", NodeType::Text), None);
+        let div_tree = XmlTree::new(
+            QuickNode::new("div", NodeType::Element),
+            Some(Box::new(vec![data_node])),
+        );
+        assert_eq!(tree, div_tree);
         let source = "<div>data</div>";
         let tree = XmlGenerator::gen(source);
         let data_node = XmlTree::new(QuickNode::new("data", NodeType::Text), None);

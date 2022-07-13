@@ -5,6 +5,7 @@ use crate::xml::trees::nodes::{
         ElementInterface, NodeInterface, PropertyInterface, PropertyKey, PropertyValue,
     },
     node_type::NodeType,
+    parts::property,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -25,6 +26,17 @@ impl<'a> QuickNode<'a> {
             value,
             node_type,
             property,
+        }
+    }
+    pub fn with_property(
+        value: &'a str,
+        node_type: NodeType,
+        property: Option<HashMap<PropertyKey<'a>, PropertyValue<'a>>>,
+    ) -> Self {
+        QuickNode {
+            value,
+            property,
+            node_type,
         }
     }
 }
