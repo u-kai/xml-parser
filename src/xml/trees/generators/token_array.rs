@@ -152,6 +152,8 @@ impl<'a> TokenArray<'a> {
 
 #[cfg(test)]
 mod p_token_array_test {
+    use crate::xml::trees::nodes::{node_interface::PropertyInterface, node_type::NodeType};
+
     use super::*;
 
     #[test]
@@ -208,5 +210,72 @@ mod p_token_array_test {
                 Token::with_type("div", TokenType::EndElement),
             ])
         );
+    }
+    #[test]
+    fn to_trees_test() {
+        let data = "<div>
+        <div>div-first
+            <p>p-data</p>
+            div-data
+        </div>
+    </div>";
+
+        let expect = TokenArray::new(data).to_tree();
+        let p = QuickNode::new("p", NodeType::Element);
+        let mut p = XmlTree::new(p, None);
+        let p_data = QuickNode::new("p-data", NodeType::Text);
+        let p_data = XmlTree::new(p_data, None);
+        p.append_children(p_data);
+        let div = QuickNode::new("div", NodeType::Element);
+        let mut div = XmlTree::new(div, None);
+        let child_div = QuickNode::new("div", NodeType::Element);
+        let mut child_div = XmlTree::new(child_div, None);
+        let div_first = QuickNode::new("div-first", NodeType::Text);
+        let div_first = XmlTree::new(div_first, None);
+        let div_data = QuickNode::new("div-data", NodeType::Text);
+        let div_data = XmlTree::new(div_data, None);
+        child_div.append_children(div_first);
+        child_div.append_children(p);
+        child_div.append_children(div_data);
+        div.append_children(child_div);
+        assert_eq!(expect, div);
+        let data = r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <div>
+                <div>
+                    div-first
+                    <p>p-data</p>
+                    <data/>
+                    div-data
+                </div>
+            </div>"#;
+        let expect = TokenArray::new(data).to_tree();
+        let mut root = QuickNode::new("?xml", NodeType::Element);
+        root.add_property("version", "1.0");
+        root.add_property("encoding", "UTF-8");
+        root.add_property("standalone", "yes");
+        root.add_property("?", "");
+        let mut root = XmlTree::new(root, None);
+        let p = QuickNode::new("p", NodeType::Element);
+        let mut p = XmlTree::new(p, None);
+        let p_data = QuickNode::new("p-data", NodeType::Text);
+        let p_data = XmlTree::new(p_data, None);
+        p.append_children(p_data);
+        let single_data = QuickNode::new("data", NodeType::Element);
+        let single_data = XmlTree::new(single_data, None);
+        let div = QuickNode::new("div", NodeType::Element);
+        let mut div = XmlTree::new(div, None);
+        let child_div = QuickNode::new("div", NodeType::Element);
+        let mut child_div = XmlTree::new(child_div, None);
+        let div_first = QuickNode::new("div-first", NodeType::Text);
+        let div_first = XmlTree::new(div_first, None);
+        let div_data = QuickNode::new("div-data", NodeType::Text);
+        let div_data = XmlTree::new(div_data, None);
+        child_div.append_children(div_first);
+        child_div.append_children(p);
+        child_div.append_children(single_data);
+        child_div.append_children(div_data);
+        div.append_children(child_div);
+        root.append_children(div);
+        assert_eq!(expect, root)
     }
 }
